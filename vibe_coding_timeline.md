@@ -1,13 +1,13 @@
-# 바이브코딩 워크플로우 강의 자료
+# 바이브코딩으로 GUI 프로그램 만들기
 
-![바이브코딩 로고](https://via.placeholder.com/800x200?text=Vibe+Coding+Workflow)
+![바이브코딩 로고](https://via.placeholder.com/800x200?text=Vibe+Coding+GUI+Development)
 
 ## 📋 강의 개요
 - [바이브코딩이란?](#바이브코딩이란)
-- [시니어 개발자의 고충](#시니어-개발자의-고충)
+- [프로젝트 소개](#프로젝트-소개)
 - [바이브코딩 프로세스](#바이브코딩-프로세스)
-- [실습: 사용자 인증 시스템 구현](#실습-사용자-인증-시스템-구현)
-- [조직 적용 가이드](#조직-적용-가이드)
+- [실습: 유튜브 다운로더 GUI 구현](#실습-유튜브-다운로더-gui-구현)
+- [UI 커스터마이징](#ui-커스터마이징)
 - [Q&A](#qa)
 
 ## 바이브코딩이란?
@@ -30,21 +30,29 @@ mindmap
       지식 공유
 ```
 
-## 시니어 개발자의 고충
+## 프로젝트 소개
 
-### 주요 문제점
+### 목표
+- Python과 PyQt를 사용한 GUI 프로그램 개발
+- 유튜브 영상 다운로드 기능 구현
+- 사용자 친화적인 UI 디자인
+
+### 주요 기능
 ```mermaid
 mindmap
-  root((개발자 고충))
-    물리적 한계
-      손 피로
-      눈 피로
-    인지적 한계
-      집중력 저하
-      생산성 저하
-    업무 부담
-      반복 작업
-      문서화 시간
+  root((유튜브 다운로더))
+    기본 기능
+      URL 입력
+      영상 정보 표시
+      다운로드 진행률
+    고급 기능
+      품질 선택
+      포맷 변환
+      플레이리스트 지원
+    UI 기능
+      다크 모드
+      테마 변경
+      레이아웃 조정
 ```
 
 ## 바이브코딩 프로세스
@@ -52,7 +60,7 @@ mindmap
 ### 1. 요구사항 정의
 ```mermaid
 graph TD
-    A[기능 정의] --> B[흐름도 작성]
+    A[기능 정의] --> B[UI/UX 설계]
     B --> C[Markdown 문서화]
     C --> D[검토 및 수정]
 ```
@@ -60,18 +68,25 @@ graph TD
 ### 2. 설계 문서 작성
 ```mermaid
 erDiagram
-    USER {
+    DOWNLOAD {
         int id PK
-        string email UK
-        string password_hash
+        string url
+        string title
+        string status
         datetime created_at
+    }
+    SETTINGS {
+        int id PK
+        string theme
+        string download_path
+        string default_quality
     }
 ```
 
 ### 3. 체크리스트 작성
 ```mermaid
 graph TD
-    A[보안 체크리스트] --> B[오류 처리]
+    A[기능 체크리스트] --> B[UI 체크리스트]
     B --> C[테스트 케이스]
     C --> D[성능 검증]
 ```
@@ -84,102 +99,157 @@ graph LR
     C --> D[테스트 실행]
 ```
 
-## 실습: 사용자 인증 시스템 구현
+## 실습: 유튜브 다운로더 GUI 구현
 
-### 1. 인증 프로세스
-```mermaid
-sequenceDiagram
-    Client->>Server: POST /api/login
-    Server->>Server: JWT 생성
-    Server->>Client: 토큰 반환
-    Client->>Server: GET /api/profile
-    Server->>Client: 프로필 정보
+### 1. 기본 UI 구현
+```python
+# main.py
+import sys
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout
+from PyQt5.QtCore import Qt
+
+class YouTubeDownloader(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("YouTube Downloader")
+        self.setMinimumSize(800, 600)
+        
+        # 메인 위젯 설정
+        main_widget = QWidget()
+        self.setCentralWidget(main_widget)
+        layout = QVBoxLayout(main_widget)
+        
+        # TODO: UI 컴포넌트 추가
 ```
 
-### 2. 데이터베이스 설계
+### 2. 다운로드 기능 구현
+```python
+# downloader.py
+import yt_dlp
+
+class YouTubeDownloader:
+    def __init__(self):
+        self.ydl_opts = {
+            'format': 'best',
+            'outtmpl': '%(title)s.%(ext)s',
+        }
+    
+    def download(self, url):
+        with yt_dlp.YoutubeDL(self.ydl_opts) as ydl:
+            ydl.download([url])
+```
+
+### 3. 진행률 표시
+```python
+# progress.py
+from PyQt5.QtWidgets import QProgressBar
+from PyQt5.QtCore import pyqtSignal
+
+class DownloadProgress(QProgressBar):
+    progress_updated = pyqtSignal(int)
+    
+    def __init__(self):
+        super().__init__()
+        self.setRange(0, 100)
+        self.setTextVisible(True)
+```
+
+## UI 커스터마이징
+
+### 1. 테마 시스템
+```python
+# themes.py
+class ThemeManager:
+    def __init__(self):
+        self.themes = {
+            'light': {
+                'background': '#ffffff',
+                'text': '#000000',
+                'accent': '#007bff'
+            },
+            'dark': {
+                'background': '#1a1a1a',
+                'text': '#ffffff',
+                'accent': '#0d6efd'
+            }
+        }
+```
+
+### 2. 스타일시트 예시
+```css
+/* style.qss */
+QMainWindow {
+    background-color: #ffffff;
+}
+
+QPushButton {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+}
+
+QLineEdit {
+    padding: 8px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+}
+```
+
+### 3. 레이아웃 커스터마이징
 ```mermaid
 graph TD
-    A[Sequelize 설정] --> B[모델 정의]
-    B --> C[사용자 등록]
-    C --> D[데이터베이스 저장]
+    A[레이아웃 선택] --> B[컴포넌트 배치]
+    B --> C[스타일 적용]
+    C --> D[반응형 조정]
 ```
-
-### 3. 보안 구현
-- JWT 토큰 기반 인증
-- 비밀번호 해싱 (bcrypt)
-- CORS 설정
-- Helmet 미들웨어
-
-## 조직 적용 가이드
-
-### 1. Prompt 템플릿 관리
-```mermaid
-graph LR
-    A[Notion/Confluence] --> B[템플릿 저장]
-    B --> C[팀 공유]
-    C --> D[버전 관리]
-```
-
-### 2. 도구 추천
-```mermaid
-mindmap
-  root((개발 도구))
-    IDE
-      VS Code
-      GitHub Copilot
-    협업
-      Slack
-      Git
-    문서화
-      Notion
-      Confluence
-```
-
-### 3. 적용 단계
-1. 소규모 프로젝트로 시작
-2. 팀 내 교육 및 실습
-3. 템플릿 및 가이드라인 수립
-4. 전체 조직 확산
 
 ## Q&A
 
 ### 자주 묻는 질문
-1. **Q: 바이브코딩을 모든 프로젝트에 적용해도 되나요?**
-   - A: 프로젝트 규모와 도메인 복잡도에 따라 PoC 단계를 거쳐야 합니다.
+1. **Q: PyQt와 Tkinter 중 어떤 것을 선택해야 하나요?**
+   - A: PyQt가 더 현대적인 UI와 풍부한 기능을 제공합니다.
 
-2. **Q: AI가 생성한 코드의 보안은 어떻게 보장하나요?**
-   - A: SAST 도구를 CI 파이프라인에 통합하여 자동화 검사를 수행합니다.
+2. **Q: 다운로드 속도를 개선하는 방법은 무엇인가요?**
+   - A: 멀티스레딩을 활용하고 다운로드 큐를 구현할 수 있습니다.
 
-3. **Q: 팀 내 적용 시 주의할 점은 무엇인가요?**
-   - A: 체계적인 교육과 템플릿 관리가 중요합니다.
+3. **Q: UI 테마를 동적으로 변경하는 방법은 무엇인가요?**
+   - A: QSS 스타일시트를 실시간으로 로드하여 적용할 수 있습니다.
 
 ## 실습 자료
 
 ### 예제 코드
-```javascript
-// 사용자 인증 미들웨어
-const verifyToken = (req, res, next) => {
-  const token = req.headers['authorization']?.split(' ')[1];
-  if (!token) return res.status(401).json({ error: 'Token missing' });
-  
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
-    next();
-  } catch (err) {
-    return res.status(403).json({ error: 'Invalid token' });
-  }
-};
+```python
+# theme_switcher.py
+class ThemeSwitcher:
+    def __init__(self, main_window):
+        self.main_window = main_window
+        self.current_theme = 'light'
+    
+    def switch_theme(self, theme_name):
+        if theme_name in self.themes:
+            self.current_theme = theme_name
+            self.apply_theme()
+    
+    def apply_theme(self):
+        theme = self.themes[self.current_theme]
+        self.main_window.setStyleSheet(f"""
+            QMainWindow {{
+                background-color: {theme['background']};
+                color: {theme['text']};
+            }}
+        """)
 ```
 
 ### 체크리스트 템플릿
 ```markdown
-## 보안 체크리스트
-- [ ] 입력값 유효성 검사
-- [ ] 비밀번호 해싱 적용
-- [ ] JWT 만료 시간 설정
-- [ ] CORS 설정
-- [ ] Helmet 미들웨어 적용
+## UI 체크리스트
+- [ ] 반응형 레이아웃 구현
+- [ ] 다크 모드 지원
+- [ ] 다운로드 진행률 표시
+- [ ] 에러 처리 및 사용자 피드백
+- [ ] 단축키 지원
 ```
 
 ---
