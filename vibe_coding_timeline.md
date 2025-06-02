@@ -6,8 +6,8 @@
 - [바이브코딩이란?](#바이브코딩이란)
 - [프로젝트 소개](#프로젝트-소개)
 - [바이브코딩 프로세스](#바이브코딩-프로세스)
-- [실습: 유튜브 다운로더 GUI 구현](#실습-유튜브-다운로더-gui-구현)
-- [UI 커스터마이징](#ui-커스터마이징)
+- [프롬프트 작성 가이드](#프롬프트-작성-가이드)
+- [실습: 유튜브 다운로더 GUI](#실습-유튜브-다운로더-gui)
 - [Q&A](#qa)
 
 ## 바이브코딩이란?
@@ -91,165 +91,159 @@ graph TD
     C --> D[성능 검증]
 ```
 
-### 4. AI 코드 생성
-```mermaid
-graph LR
-    A[Prompt 작성] --> B[AI 코드 생성]
-    B --> C[코드 검토]
-    C --> D[테스트 실행]
+## 프롬프트 작성 가이드
+
+### 1. 기본 프롬프트 구조
+```markdown
+# 컨텍스트
+- 프로젝트 목적: 유튜브 영상 다운로드 GUI 프로그램
+- 사용 기술: Python, PyQt5
+- 대상 사용자: 일반 사용자
+
+# 요구사항
+1. URL 입력 필드
+2. 다운로드 버튼
+3. 진행률 표시
+4. 다운로드 목록
+
+# 제약사항
+- Python 3.8 이상
+- PyQt5 사용
+- yt-dlp 라이브러리 활용
 ```
 
-## 실습: 유튜브 다운로더 GUI 구현
+### 2. UI 컴포넌트 프롬프트 예시
+```markdown
+# 메인 윈도우 레이아웃
+- 윈도우 크기: 800x600
+- 배경색: #ffffff
+- 폰트: Noto Sans KR
 
-### 1. 기본 UI 구현
-```python
-# main.py
-import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout
-from PyQt5.QtCore import Qt
+# 컴포넌트 배치
+1. 상단: URL 입력 필드 (QLineEdit)
+2. 중앙: 다운로드 목록 (QListWidget)
+3. 하단: 진행률 표시 (QProgressBar)
 
-class YouTubeDownloader(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("YouTube Downloader")
-        self.setMinimumSize(800, 600)
-        
-        # 메인 위젯 설정
-        main_widget = QWidget()
-        self.setCentralWidget(main_widget)
-        layout = QVBoxLayout(main_widget)
-        
-        # TODO: UI 컴포넌트 추가
+# 스타일 가이드
+- 버튼: 둥근 모서리, 파란색 배경
+- 입력 필드: 회색 테두리
+- 진행률: 그라데이션 효과
 ```
 
-### 2. 다운로드 기능 구현
-```python
-# downloader.py
-import yt_dlp
+### 3. 기능 구현 프롬프트 예시
+```markdown
+# 다운로드 기능
+- 입력: 유튜브 URL
+- 출력: 로컬 파일
+- 옵션:
+  * 품질 선택 (720p, 1080p)
+  * 포맷 선택 (mp4, mp3)
+  * 저장 경로 지정
 
-class YouTubeDownloader:
-    def __init__(self):
-        self.ydl_opts = {
-            'format': 'best',
-            'outtmpl': '%(title)s.%(ext)s',
-        }
-    
-    def download(self, url):
-        with yt_dlp.YoutubeDL(self.ydl_opts) as ydl:
-            ydl.download([url])
+# 에러 처리
+- 잘못된 URL
+- 네트워크 오류
+- 저장 공간 부족
+
+# 진행률 업데이트
+- 다운로드 시작: 0%
+- 진행 중: 실시간 업데이트
+- 완료: 100%
 ```
 
-### 3. 진행률 표시
-```python
-# progress.py
-from PyQt5.QtWidgets import QProgressBar
-from PyQt5.QtCore import pyqtSignal
+## 실습: 유튜브 다운로더 GUI
 
-class DownloadProgress(QProgressBar):
-    progress_updated = pyqtSignal(int)
-    
-    def __init__(self):
-        super().__init__()
-        self.setRange(0, 100)
-        self.setTextVisible(True)
-```
-
-## UI 커스터마이징
-
-### 1. 테마 시스템
-```python
-# themes.py
-class ThemeManager:
-    def __init__(self):
-        self.themes = {
-            'light': {
-                'background': '#ffffff',
-                'text': '#000000',
-                'accent': '#007bff'
-            },
-            'dark': {
-                'background': '#1a1a1a',
-                'text': '#ffffff',
-                'accent': '#0d6efd'
-            }
-        }
-```
-
-### 2. 스타일시트 예시
-```css
-/* style.qss */
-QMainWindow {
-    background-color: #ffffff;
-}
-
-QPushButton {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 4px;
-}
-
-QLineEdit {
-    padding: 8px;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-}
-```
-
-### 3. 레이아웃 커스터마이징
+### 1. 프롬프트 작성 단계
 ```mermaid
 graph TD
-    A[레이아웃 선택] --> B[컴포넌트 배치]
-    B --> C[스타일 적용]
-    C --> D[반응형 조정]
+    A[요구사항 분석] --> B[프롬프트 구조화]
+    B --> C[컨텍스트 추가]
+    C --> D[제약사항 명시]
+```
+
+### 2. 프롬프트 개선 방법
+```mermaid
+mindmap
+  root((프롬프트 개선))
+    명확성
+      구체적인 요구사항
+      명확한 제약사항
+    구조화
+      단계별 설명
+      논리적 흐름
+    피드백
+      결과 검증
+      반복 개선
+```
+
+### 3. 프롬프트 템플릿
+```markdown
+# [컴포넌트명] 구현
+## 목적
+[이 컴포넌트가 해결할 문제]
+
+## 요구사항
+1. [기능 1]
+2. [기능 2]
+3. [기능 3]
+
+## 제약사항
+- [기술적 제약]
+- [성능 요구사항]
+- [UI/UX 가이드라인]
+
+## 예상 동작
+1. [사용자 액션 1]
+2. [시스템 응답 1]
+3. [사용자 액션 2]
+4. [시스템 응답 2]
 ```
 
 ## Q&A
 
 ### 자주 묻는 질문
-1. **Q: PyQt와 Tkinter 중 어떤 것을 선택해야 하나요?**
-   - A: PyQt가 더 현대적인 UI와 풍부한 기능을 제공합니다.
+1. **Q: 프롬프트를 더 효과적으로 작성하는 방법은 무엇인가요?**
+   - A: 구체적인 요구사항과 제약사항을 명확히 하고, 예상되는 결과를 상세히 설명하는 것이 중요합니다.
 
-2. **Q: 다운로드 속도를 개선하는 방법은 무엇인가요?**
-   - A: 멀티스레딩을 활용하고 다운로드 큐를 구현할 수 있습니다.
+2. **Q: AI가 생성한 코드를 어떻게 검증하나요?**
+   - A: 단위 테스트 케이스를 포함한 프롬프트를 작성하고, 생성된 코드의 각 부분이 요구사항을 만족하는지 확인합니다.
 
-3. **Q: UI 테마를 동적으로 변경하는 방법은 무엇인가요?**
-   - A: QSS 스타일시트를 실시간으로 로드하여 적용할 수 있습니다.
+3. **Q: 복잡한 기능을 구현할 때는 어떻게 프롬프트를 작성하나요?**
+   - A: 기능을 작은 단위로 분해하고, 각 단위별로 프롬프트를 작성한 후 점진적으로 통합하는 방식을 사용합니다.
 
 ## 실습 자료
 
-### 예제 코드
-```python
-# theme_switcher.py
-class ThemeSwitcher:
-    def __init__(self, main_window):
-        self.main_window = main_window
-        self.current_theme = 'light'
-    
-    def switch_theme(self, theme_name):
-        if theme_name in self.themes:
-            self.current_theme = theme_name
-            self.apply_theme()
-    
-    def apply_theme(self):
-        theme = self.themes[self.current_theme]
-        self.main_window.setStyleSheet(f"""
-            QMainWindow {{
-                background-color: {theme['background']};
-                color: {theme['text']};
-            }}
-        """)
+### 프롬프트 예시
+```markdown
+# 다운로드 진행률 표시 구현
+## 목적
+사용자에게 다운로드 진행 상황을 시각적으로 보여주기
+
+## 요구사항
+1. 0-100% 범위의 진행률 표시
+2. 현재 다운로드 속도 표시
+3. 예상 남은 시간 표시
+4. 다운로드 완료 시 알림
+
+## 제약사항
+- PyQt5 QProgressBar 사용
+- 1초마다 업데이트
+- 메인 스레드 블로킹 방지
+
+## 예상 동작
+1. 다운로드 시작 시 0% 표시
+2. 진행 중 실시간 업데이트
+3. 완료 시 100% 및 알림 표시
 ```
 
 ### 체크리스트 템플릿
 ```markdown
-## UI 체크리스트
-- [ ] 반응형 레이아웃 구현
-- [ ] 다크 모드 지원
-- [ ] 다운로드 진행률 표시
-- [ ] 에러 처리 및 사용자 피드백
-- [ ] 단축키 지원
+## 프롬프트 체크리스트
+- [ ] 목적이 명확한가?
+- [ ] 요구사항이 구체적인가?
+- [ ] 제약사항이 명시되어 있는가?
+- [ ] 예상 동작이 상세한가?
+- [ ] 테스트 케이스가 포함되어 있는가?
 ```
 
 ---
