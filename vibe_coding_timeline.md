@@ -57,6 +57,162 @@ mindmap
       레이아웃 조정
 ```
 
+## 사용 라이브러리 및 기술 스택
+
+### 유튜브 다운로드 라이브러리 비교
+
+#### 1. yt-dlp
+- **장점**
+  - youtube-dl의 개선된 포크 버전
+  - 빠른 다운로드 속도
+  - 다양한 플랫폼 지원 (YouTube, Vimeo, Dailymotion 등)
+  - 자동 업데이트 기능
+  - 고화질 영상 다운로드 지원
+  - 자막, 썸네일 등 메타데이터 추출
+- **단점**
+  - YouTube 정책 변경에 따른 업데이트 필요
+  - 일부 제한된 영상 다운로드 불가
+- **설치 방법**
+  ```bash
+  pip install yt-dlp
+  ```
+
+#### 2. pytube
+- **장점**
+  - 순수 Python으로 작성되어 가벼움
+  - 설치가 간단함
+  - 기본적인 다운로드 기능 제공
+- **단점**
+  - YouTube 정책 변경에 취약
+  - 고화질 영상 지원이 제한적
+  - 업데이트가 느림
+- **설치 방법**
+  ```bash
+  pip install pytube
+  ```
+
+#### 3. youtube-dl
+- **장점**
+  - 오래된 역사와 안정성
+  - 다양한 플랫폼 지원
+  - 활발한 커뮤니티
+- **단점**
+  - 업데이트가 느림
+  - 다운로드 속도가 상대적으로 느림
+- **설치 방법**
+  ```bash
+  pip install youtube-dl
+  ```
+
+### 비디오 처리 도구
+
+#### 1. FFmpeg
+- **주요 기능**
+  - 비디오/오디오 인코딩/디코딩
+  - 포맷 변환
+  - 스트림 병합/분할
+  - 해상도 변경
+  - 비트레이트 조정
+- **장점**
+  - 강력한 비디오 처리 기능
+  - 다양한 코덱 지원
+  - 커맨드라인 인터페이스
+  - 크로스 플랫폼 지원
+- **설치 방법**
+  ```bash
+  # Windows (chocolatey)
+  choco install ffmpeg
+  
+  # Linux
+  sudo apt-get install ffmpeg
+  
+  # macOS
+  brew install ffmpeg
+  ```
+
+#### 2. MP4Box
+- **주요 기능**
+  - MP4 컨테이너 조작
+  - 스트림 병합
+  - 메타데이터 관리
+  - DRM 지원
+- **장점**
+  - MP4 포맷에 특화된 기능
+  - 빠른 처리 속도
+  - 다양한 MP4 관련 기능
+- **단점**
+  - MP4 외 포맷 지원 제한
+  - 설치가 다소 복잡
+- **설치 방법**
+  ```bash
+  # Windows
+  choco install gpac
+  
+  # Linux
+  sudo apt-get install gpac
+  
+  # macOS
+  brew install gpac
+  ```
+
+### 고화질 영상 다운로드 및 처리 가이드
+
+#### 1. 최적의 다운로드 설정
+```python
+# yt-dlp를 사용한 고화질 다운로드 예시
+ydl_opts = {
+    'format': 'bestvideo[ext=mp4][height<=2160]+bestaudio[ext=m4a]/best[ext=mp4]/best',
+    'merge_output_format': 'mp4',
+    'postprocessors': [{
+        'key': 'FFmpegVideoConvertor',
+        'preferedformat': 'mp4',
+    }],
+    'outtmpl': '%(title)s.%(ext)s',
+    'writethumbnail': True,
+    'writesubtitles': True,
+    'writeautomaticsub': True,
+}
+```
+
+#### 2. FFmpeg를 이용한 후처리
+```bash
+# 고화질 비디오 변환
+ffmpeg -i input.mp4 -c:v libx264 -crf 18 -preset slow -c:a aac -b:a 192k output.mp4
+
+# 해상도 변경
+ffmpeg -i input.mp4 -vf "scale=1920:1080" -c:v libx264 -crf 23 output.mp4
+
+# 비디오/오디오 병합
+ffmpeg -i video.mp4 -i audio.m4a -c:v copy -c:a aac output.mp4
+```
+
+#### 3. MP4Box를 이용한 컨테이너 최적화
+```bash
+# MP4 컨테이너 최적화
+MP4Box -add video.mp4 -add audio.m4a -new output.mp4
+
+# 메타데이터 추가
+MP4Box -add video.mp4 -meta name="Title" -meta value="My Video" output.mp4
+```
+
+#### 4. 고화질 다운로드 시 주의사항
+- **시스템 요구사항**
+  - 충분한 저장 공간 (4K 영상 기준 1시간당 약 20-30GB)
+  - 안정적인 인터넷 연결 (최소 50Mbps 이상 권장)
+  - 충분한 CPU/메모리 리소스
+
+- **다운로드 최적화**
+  - 병렬 다운로드 설정
+  - 청크 크기 조정
+  - 재시도 횟수 설정
+  - 프록시 설정 (필요시)
+
+- **포스트 프로세싱**
+  - 메타데이터 보존
+  - 썸네일 생성
+  - 자막 추출 및 병합
+  - 비디오 인코딩 최적화
+
 ## 바이브코딩 프로세스
 
 ### 1. 요구사항 정의
