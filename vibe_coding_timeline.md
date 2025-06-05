@@ -104,6 +104,41 @@ mindmap
   pip install youtube-dl
   ```
 
+#### 4. pafy
+- **장점**
+  - 간단하고 직관적인 API
+  - 메타데이터 추출 용이
+  - 영상 정보 조회가 빠름
+  - youtube-dl 기반으로 안정적
+- **단점**
+  - youtube-dl의 업데이트에 의존
+  - 고화질 영상 다운로드 시 제한적
+  - 일부 최신 YouTube 기능 미지원
+- **설치 방법**
+  ```bash
+  pip install pafy
+  ```
+- **사용 예시**
+  ```python
+  import pafy
+  
+  # 영상 정보 가져오기
+  video = pafy.new("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+  
+  # 메타데이터 접근
+  print(f"제목: {video.title}")
+  print(f"조회수: {video.viewcount}")
+  print(f"길이: {video.length}초")
+  
+  # 최고 화질 스트림 다운로드
+  best = video.getbest()
+  best.download()
+  
+  # 특정 해상도 다운로드
+  video_1080p = video.getbest(preftype="mp4", resolution="1080p")
+  video_1080p.download()
+  ```
+
 ### 비디오 처리 도구
 
 #### 1. FFmpeg
